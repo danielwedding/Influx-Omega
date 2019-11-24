@@ -1,0 +1,16 @@
+[{
+    "input": "src/main.js",
+    "output": "build/io.js",
+    "compress": false,
+    "plugins": {
+        "rollup-plugin-eslint": {
+            "rules": {
+                "semi": ["error", "always"],
+                "quotes": ["error", "double"],
+                "no-implicit-globals": ["error", {}],
+                "no-global-assign": ["error", {}]
+            },
+            "parser": "babel-eslint"
+        }
+    }
+}]
