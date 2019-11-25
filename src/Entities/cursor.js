@@ -1,12 +1,9 @@
-export class Cursor {
-    constructor(ctx) {
+import { Sprite } from "./sprite";
+
+export class Cursor extends Sprite {
+    constructor(assets, ctx) {
+        super(assets, "cursor");
         this.ctx = ctx;
-        this.x = 0;
-        this.y = 0;
-        this.velX = 0;
-        this.velY = 0;
-        this.img = new Image();
-        this.img.src = "./assets/cursor.png";
         this.speed = 1.5;
     }
 

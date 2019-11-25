@@ -9,14 +9,15 @@ export class PC {
     constructor() {
         this.assets = {
             "unknown": new Object("../../assets/unknown.png"),
-            "player": new Object("../../assets/player.png")
+            "player": new Object("../../assets/player.png"),
+            "cursor": new Object("../../assets/cursor.png")
         };
 
         this.keybinds = new Keybind();
         this.player = new Player(this.assets);
         this.batch = new Batch();
         this.camera = new Camera(this.batch.ctx);
-        this.cursor = new Cursor(this.batch.ctx);
+        this.cursor = new Cursor(this.assets, this.batch.ctx);
 
         this.batch.canvas.requestPointerLock = this.batch.canvas.requestPointerLock || this.batch.canvas.mozRequestPointerLock;
 

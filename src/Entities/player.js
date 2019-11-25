@@ -1,15 +1,10 @@
 import { Inventory } from "../ItemTypes/inventory";
 import { Item } from "../ItemTypes/item";
+import { Sprite } from "./sprite";
 
-export class Player {
+export class Player extends Sprite {
     constructor(assets) {
-        this.x = 0;
-        this.y = 0;
-        this.velX = 0;
-        this.velY = 0;
-        this.img = assets["player"];
-        this.width = this.img.width;
-        this.height = this.img.height;
+        super(assets, "player");
         this.rotation = 90;
         this.speed = 5;
         this.inventory = new Inventory(assets);
