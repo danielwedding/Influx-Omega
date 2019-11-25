@@ -96,16 +96,16 @@
         constructor() {}
         moveToDestination(t, e) {
             // subtract (= difference vector)
-            var s = e.x - t.x, i = e.y - t.y, a = Math.sqrt(s * s + i * i);
-            a && (s /= a, i /= a), 
+            var s = e.x - t.x, i = e.y - t.y, h = Math.sqrt(s * s + i * i);
+            h && (s /= h, i /= h), 
             // move
             // delta is the elapsed time in seconds
             // SPEED is the speed in units per second (UPS)
             t.x += 1 * s, t.y += 1 * i;
         }
         watchTarget(t, e) {
-            let s = t.x, i = t.y, a = e.x, n = (e.y - i) / (a - s);
-            return Math.atan(n);
+            let s = t.x, i = t.y, h = e.x - s, a = e.y - i;
+            return Math.atan2(a, h);
         }
     }
     class i {
@@ -113,14 +113,14 @@
             this.name = t, this.count = e, s[t] ? this.img = s[t] : this.img = s.unknown;
         }
     }
-    class a {
+    class h {
         constructor(t) {
             this.items = [], this.assets = t, this.columns = 7, this.rows = 5, this.open = !1;
         }
         addItem(t, e, s) {
             if (this.items.length >= this.columns * this.rows + s) {
-                if (this.items.length > 0) for (let a of this.items) if (a.name == t) a.count += s, 
-                console.log(`${a.name}: ${a.count}`); else switch (e) {
+                if (this.items.length > 0) for (let h of this.items) if (h.name == t) h.count += s, 
+                console.log(`${h.name}: ${h.count}`); else switch (e) {
                   case "Equipment":
                     break;
 
@@ -153,10 +153,11 @@
             document.body.removeChild(this.invDisplay), this.open = !1;
         }
     }
-    class n {
+    class a {
         constructor(t) {
-            this.x = 0, this.y = 0, this.velX = 0, this.velY = 0, this.img = t.player, this.rotation = 90, 
-            this.speed = 5, this.inventory = new a(t), this.equipment = {
+            this.x = 0, this.y = 0, this.velX = 0, this.velY = 0, this.img = t.player, this.width = this.img.width, 
+            this.height = this.img.height, this.rotation = 90, this.speed = 5, this.inventory = new h(t), 
+            this.equipment = {
                 head: null,
                 shoulders: null,
                 arms: null,
@@ -181,7 +182,7 @@
             this.equipment[e] = null, this.inventory.push(new i(t, 1));
         }
     }
-    class o {
+    class n {
         constructor() {
             this.canvas = document.getElementById("canva"), this.ctx = this.canvas.getContext("2d");
         }
@@ -189,18 +190,14 @@
             this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         }
         draw(t) {
-            let e = 0;
-            t.rotation && (e = t.rotation, this.ctx.translate(t.x, t.y), this.ctx.rotate(t.rotation), 
-            //* Math.PI / 180);
-            this.ctx.translate(-t.x, -t.y)), this.ctx.drawImage(t.img, t.x, t.y), t.rotation && (this.ctx.translate(t.x, t.y), 
-            this.ctx.rotate(-t.rotation), // * Math.PI / 180);
-            this.ctx.translate(-t.x, -t.y)), t.rotation = e;
+            this.ctx.save(), t.rotation && (this.ctx.translate(t.x + t.width / 2, t.y + t.height / 2), 
+            this.ctx.rotate(t.rotation)), this.ctx.drawImage(t.img, t.x, t.y), this.ctx.restore();
         }
         update(t) {
             t.x += t.velX, t.y += t.velY;
         }
     }
-    class h {
+    class o {
         constructor(t, e) {
             e = e || {}, this.distance = 1e3, this.lookat = [ 0, 0 ], this.context = t, this.fieldOfView = e.fieldOfView || Math.PI / 4, 
             this.viewport = {
@@ -272,8 +269,8 @@
             this.assets = {
                 unknown: new l("../../assets/unknown.png"),
                 player: new l("../../assets/player.png")
-            }, this.keybinds = new s, this.player = new n(this.assets), this.batch = new o, 
-            this.camera = new h(this.batch.ctx), this.cursor = new r(this.batch.ctx), this.batch.canvas.requestPointerLock = this.batch.canvas.requestPointerLock || this.batch.canvas.mozRequestPointerLock, 
+            }, this.keybinds = new s, this.player = new a(this.assets), this.batch = new n, 
+            this.camera = new o(this.batch.ctx), this.cursor = new r(this.batch.ctx), this.batch.canvas.requestPointerLock = this.batch.canvas.requestPointerLock || this.batch.canvas.mozRequestPointerLock, 
             document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock, 
             this.batch.canvas.onclick = () => {
                 this.batch.canvas.requestPointerLock();
@@ -340,19 +337,19 @@
     class _ {}
     // Imports
     // Webpages to be loaded into the router
-        let E = new e("\n    <h2>Choose your console</h2>\n    <button id='pc'>Computer (PC)</button>\n    <button id='console'>Console (XBOX | SWITCH | PS' </buttom>\n    <button id='mobile'> Mobile (Phones, Tablets) </button>\n");
-    E.run = () => {
+        let d = new e("\n    <h2>Choose your console</h2>\n    <button id='pc'>Computer (PC)</button>\n    <button id='console'>Console (XBOX | SWITCH | PS' </buttom>\n    <button id='mobile'> Mobile (Phones, Tablets) </button>\n");
+    d.run = () => {
         document.querySelectorAll("button").forEach(t => {
             t.onclick = () => {
                 localStorage.setItem("console", t.id), window.location = "./#/game";
             };
         });
     };
-    let d = new e("\n    <link rel='stylesheet' href='./styles/global.css'>\n    <canvas id='canva'></canvas>\n"), p = null;
+    let E = new e("\n    <link rel='stylesheet' href='./styles/global.css'>\n    <canvas id='canva'></canvas>\n"), p = null;
     function u() {
         p.render(), p.update(), requestAnimationFrame(u);
     }
-    d.run = () => {
+    E.run = () => {
         let t = document.getElementById("canva");
         switch (t.width = window.innerWidth, t.height = window.innerHeight, localStorage.getItem("console")) {
           case "pc":
@@ -400,7 +397,7 @@
             await s.render(), await s.run();
         }
     }({
-        "/": E,
-        "/game": d
+        "/": d,
+        "/game": E
     }).start();
 }();

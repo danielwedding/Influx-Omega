@@ -28,8 +28,9 @@ export class Keybind {
         let pos1 = { x: object.x, y: object.y };
         let pos2 = { x: target.x, y: target.y };
 
-        let m = (pos2.y - pos1.y) / (pos2.x - pos1.x);
-        let a = Math.atan(m);
-        return a;
+        let targetX = pos2.x - pos1.x;
+        let targetY = pos2.y - pos1.y;
+
+        return Math.atan2(targetY, targetX);
     }
 }

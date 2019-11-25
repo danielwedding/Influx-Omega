@@ -8,6 +8,8 @@ export class Player {
         this.velX = 0;
         this.velY = 0;
         this.img = assets["player"];
+        this.width = this.img.width;
+        this.height = this.img.height;
         this.rotation = 90;
         this.speed = 5;
         this.inventory = new Inventory(assets);

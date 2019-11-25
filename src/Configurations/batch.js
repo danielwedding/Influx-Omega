@@ -9,24 +9,16 @@ export class Batch {
     }
 
     draw(object) {
-        let original = 0;
-        if (object.rotation) {
-            original = object.rotation;
+        this.ctx.save();
 
-            this.ctx.translate(object.x, object.y);
-            this.ctx.rotate((object.rotation)); //* Math.PI / 180);
-            this.ctx.translate(-object.x, -object.y);
+        if (object.rotation) {
+            this.ctx.translate(object.x + object.width / 2, object.y + object.height / 2);
+            this.ctx.rotate(object.rotation);
         };
 
         this.ctx.drawImage(object.img, object.x, object.y);
 
-        if (object.rotation) {
-            this.ctx.translate(object.x, object.y);
-            this.ctx.rotate((-object.rotation)); // * Math.PI / 180);
-            this.ctx.translate(-object.x, -object.y);
-        };
-
-        object.rotation = original;
+        this.ctx.restore();
     }
 
     update(object) {
