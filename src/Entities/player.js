@@ -3,11 +3,11 @@ import { Item } from "../ItemTypes/item";
 import { Sprite } from "./sprite";
 
 export class Player extends Sprite {
-    constructor(assets) {
+    constructor(assets, ie) {
         super(assets, "player");
         this.rotation = 90;
         this.speed = 5;
-        this.inventory = new Inventory(assets);
+        this.inventory = new Inventory(assets, ie);
         this.equipment = {
             "head": null,
             "shoulders": null,

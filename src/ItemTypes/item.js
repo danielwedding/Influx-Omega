@@ -1,11 +1,10 @@
 export class Item {
-    constructor(name, count, assets) {
+    constructor(id, name, description, url, assets) {
+        this.id = id;
         this.name = name;
-        this.count = count;
-        if (assets[name]) {
-            this.img = assets[name];
-        } else {
-            this.img = assets["unknown"];
-        }
+        this.description = description;
+        this.url = url;
+        this.img = assets[name];
+        this.count = 0;
     }
 }

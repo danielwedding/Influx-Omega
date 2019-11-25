@@ -1,23 +1,29 @@
+import { FileLoader } from "@outwalk/iris";
 import { Keybind } from "../Configurations/keybind";
 import { Player } from "../Entities/player";
 import { Batch } from "../Configurations/batch";
 import { Camera } from "../Configurations/camera";
 import { Cursor } from "../Entities/cursor";
 import { Object } from "../Configurations/object";
+import { ItemDatabase } from "../ItemTypes/ItemDatabase";
 
 export class PC {
     constructor() {
         this.assets = {
+            "items": this.loadFile("../../assets/items.txt"),
             "unknown": new Object("../../assets/unknown.png"),
             "player": new Object("../../assets/player.png"),
             "cursor": new Object("../../assets/cursor.png")
         };
 
         this.keybinds = new Keybind();
-        this.player = new Player(this.assets);
         this.batch = new Batch();
         this.camera = new Camera(this.batch.ctx);
         this.cursor = new Cursor(this.assets, this.batch.ctx);
+        let iDB = new ItemDatabase(this.assets["items"], this.assets);
+
+        this.player = new Player(this.assets, iDB);
+
 
         this.batch.canvas.requestPointerLock = this.batch.canvas.requestPointerLock || this.batch.canvas.mozRequestPointerLock;
 
@@ -81,6 +87,11 @@ export class PC {
         });
 
         this.player.addItem("unknown", null, 1);
+    }
+
+    async loadFile(url) {
+        let file = await FileLoader.load(url);
+        return file;
     }
 
     lockChangeAlert(batch) {

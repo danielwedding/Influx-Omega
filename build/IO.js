@@ -104,64 +104,49 @@
             t.x += 1 * s, t.y += 1 * i;
         }
         watchTarget(t, e) {
-            let s = t.x, i = t.y, a = e.x - s, h = e.y - i;
-            return Math.atan2(h, a);
+            let s = t.x, i = t.y, a = e.x - s, n = e.y - i;
+            return Math.atan2(n, a);
         }
     }
     class i {
-        constructor(t, e, s) {
-            this.name = t, this.count = e, s[t] ? this.img = s[t] : this.img = s.unknown;
+        constructor(t, e, s, i, a) {
+            this.id = t, this.name = e, this.description = s, this.url = i, this.img = a[e], 
+            this.count = 0;
         }
     }
     class a {
-        constructor(t) {
-            this.items = [], this.assets = t, this.columns = 7, this.rows = 5, this.open = !1;
+        constructor(t, e) {
+            this.db = e, this.assets = t, this.columns = 7, this.rows = 5, this.open = !1;
         }
-        addItem(t, e, s) {
-            if (this.items.length >= this.columns * this.rows + s) {
-                if (this.items.length > 0) for (let a of this.items) if (a.name == t) a.count += s, 
-                console.log(`${a.name}: ${a.count}`); else switch (e) {
-                  case "Equipment":
-                    break;
-
-                  default:
-                    this.items.push(new i(t, s, this.assets)), console.log(this.items);
-                }
-            } else switch (e) {
-              case "Equipment":
-                break;
-
-              default:
-                this.items.push(new i(t, s, this.assets)), console.log(this.items);
-            }
+        addItem(t, e) {
+            let s = this.db.getItem(t);
+            s ? s.count += e : console.log("Unknown Item");
         }
         removeItem(t, e) {
-            for (let s = 0; s < this.items.length; s++) {
-                let i = this.items[s];
-                i.name == t && (i.count -= e, i.count <= 0 && this.items.splice(s, 1));
-            }
+            let s = this.db.getItem(t);
+            s && s.count > e && (s.count -= e);
         }
         display() {
             this.invDisplay = document.createElement("div"), this.invDisplay.width = this.rows, 
             this.invDisplay.height = this.columns, this.invDisplay.style = "display: grid;", 
             this.invDisplay.style.position = "absolute", this.invDisplay.style.top = "0px", 
             this.invDisplay.style.left = "0px";
-            for (let t of this.items) this.invDisplay.appendChild(t.img);
+            for (let t of this.db.items) this.invDisplay.appendChild(t.img);
             document.body.appendChild(this.invDisplay), this.open = !0;
         }
         hide() {
             document.body.removeChild(this.invDisplay), this.open = !1;
         }
     }
-    class h {
+    class n {
         constructor(t, e) {
             this.x = 0, this.y = 0, this.velX = 0, this.velY = 0, this.img = t[e], this.width = this.img.width, 
             this.height = this.img.height;
         }
     }
-    class n extends h {
-        constructor(t) {
-            super(t, "player"), this.rotation = 90, this.speed = 5, this.inventory = new a(t), 
+    class h extends n {
+        constructor(t, e) {
+            super(t, "player"), this.rotation = 90, this.speed = 5, this.inventory = new a(t, e), 
             this.equipment = {
                 head: null,
                 shoulders: null,
@@ -249,7 +234,7 @@
             s;
         }
     }
-    class c extends h {
+    class c extends n {
         constructor(t, e) {
             super(t, "cursor"), this.ctx = e, this.speed = 1.5;
         }
@@ -269,14 +254,32 @@
         }
     }
     class T {
+        constructor(t, e) {
+            this.items = [], this.parseItems(t, e, this.items);
+        }
+        parseItems(t, e, s) {
+            t.then(t => {
+                t.split("|").forEach((function(t) {
+                    let a = t.split(", "), n = new i(a[0], a[1], a[2], a[3], e);
+                    s.push(n);
+                }));
+            });
+        }
+        getItem(t) {
+            for (let t of this.items) t.name;
+        }
+    }
+    class _ {
         constructor() {
             this.assets = {
+                items: this.loadFile("../../assets/items.txt"),
                 unknown: new l("../../assets/unknown.png"),
                 player: new l("../../assets/player.png"),
                 cursor: new l("../../assets/cursor.png")
-            }, this.keybinds = new s, this.player = new n(this.assets), this.batch = new o, 
-            this.camera = new r(this.batch.ctx), this.cursor = new c(this.assets, this.batch.ctx), 
-            this.batch.canvas.requestPointerLock = this.batch.canvas.requestPointerLock || this.batch.canvas.mozRequestPointerLock, 
+            }, this.keybinds = new s, this.batch = new o, this.camera = new r(this.batch.ctx), 
+            this.cursor = new c(this.assets, this.batch.ctx);
+            let t = new T(this.assets.items, this.assets);
+            this.player = new h(this.assets, t), this.batch.canvas.requestPointerLock = this.batch.canvas.requestPointerLock || this.batch.canvas.mozRequestPointerLock, 
             document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock, 
             this.batch.canvas.onclick = () => {
                 this.batch.canvas.requestPointerLock();
@@ -324,6 +327,9 @@
                 }
             }), this.player.addItem("unknown", null, 1);
         }
+        async loadFile(e) {
+            return await t.load(e);
+        }
         lockChangeAlert(t) {
             document.pointerLockElement === t.canvas || document.mozPointerLockElement === t.canvas ? document.addEventListener("mousemove", e => {
                 this.cursor.updatePosition(e, t.canvas);
@@ -339,38 +345,38 @@
             this.player.rotation = this.keybinds.watchTarget(this.player, this.cursor), this.batch.update(this.player);
         }
     }
-    class _ {}
     class d {}
+    class E {}
     // Imports
     // Webpages to be loaded into the router
-        let E = new e("\n    <h2>Choose your console</h2>\n    <button id='pc'>Computer (PC)</button>\n    <button id='console'>Console (XBOX | SWITCH | PS' </buttom>\n    <button id='mobile'> Mobile (Phones, Tablets) </button>\n");
-    E.run = () => {
+        let p = new e("\n    <h2>Choose your console</h2>\n    <button id='pc'>Computer (PC)</button>\n    <button id='console'>Console (XBOX | SWITCH | PS' </buttom>\n    <button id='mobile'> Mobile (Phones, Tablets) </button>\n");
+    p.run = () => {
         document.querySelectorAll("button").forEach(t => {
             t.onclick = () => {
                 localStorage.setItem("console", t.id), window.location = "./#/game";
             };
         });
     };
-    let u = new e("\n    <link rel='stylesheet' href='./styles/global.css'>\n    <canvas id='canva'></canvas>\n"), p = null;
-    function m() {
-        p.render(), p.update(), requestAnimationFrame(m);
+    let u = new e("\n    <link rel='stylesheet' href='./styles/global.css'>\n    <canvas id='canva'></canvas>\n"), m = null;
+    function w() {
+        m.render(), m.update(), requestAnimationFrame(w);
     }
     u.run = () => {
         let t = document.getElementById("canva");
         switch (t.width = window.innerWidth, t.height = window.innerHeight, localStorage.getItem("console")) {
           case "pc":
-            let t = new T;
-            p = t, requestAnimationFrame(m);
+            let t = new _;
+            m = t, requestAnimationFrame(w);
             break;
 
           case "console":
-            let e = new _;
-            p = e, requestAnimationFrame(m);
+            let e = new d;
+            m = e, requestAnimationFrame(w);
             break;
 
           case "mobile":
-            let s = new d;
-            p = s, requestAnimationFrame(m);
+            let s = new E;
+            m = s, requestAnimationFrame(w);
         }
     }, 
     // Starts the router
@@ -403,7 +409,7 @@
             await s.render(), await s.run();
         }
     }({
-        "/": E,
+        "/": p,
         "/game": u
     }).start();
 }();
