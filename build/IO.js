@@ -95,7 +95,6 @@
     class s {
         constructor() {}
         moveToDestination(t, e) {
-            console.log(`Object: ${t.x}:${t.y} | Destination: ${e.x}:${e.y}`);
             // subtract (= difference vector)
             var s = e.x - t.x, i = e.y - t.y, a = Math.sqrt(s * s + i * i);
             a && (s /= a, i /= a), 
@@ -105,19 +104,86 @@
             t.x += 1 * s, t.y += 1 * i;
         }
         watchTarget(t, e) {
-            let s = t.x, i = t.y, a = e.x, T = (e.y - i) / (a - s);
-            return Math.atan(T);
+            let s = t.x, i = t.y, a = e.x, n = (e.y - i) / (a - s);
+            return Math.atan(n);
         }
     }
     class i {
-        constructor() {
-            this.x = 0, this.y = 0, this.velX = 0, this.velY = 0, this.img = new Image, this.img.src = "./assets/player.png", 
-            this.rotation = 90;
+        constructor(t, e, s) {
+            this.name = t, this.count = e, s[t] ? this.img = s[t] : this.img = s.unknown;
         }
     }
     class a {
+        constructor(t) {
+            this.items = [], this.assets = t, this.columns = 7, this.rows = 5, this.open = !1;
+        }
+        addItem(t, e, s) {
+            if (this.items.length >= this.columns * this.rows + s) {
+                if (this.items.length > 0) for (let a of this.items) if (a.name == t) a.count += s, 
+                console.log(`${a.name}: ${a.count}`); else switch (e) {
+                  case "Equipment":
+                    break;
+
+                  default:
+                    this.items.push(new i(t, s, this.assets)), console.log(this.items);
+                }
+            } else switch (e) {
+              case "Equipment":
+                break;
+
+              default:
+                this.items.push(new i(t, s, this.assets)), console.log(this.items);
+            }
+        }
+        removeItem(t, e) {
+            for (let s = 0; s < this.items.length; s++) {
+                let i = this.items[s];
+                i.name == t && (i.count -= e, i.count <= 0 && this.items.splice(s, 1));
+            }
+        }
+        display() {
+            this.invDisplay = document.createElement("div"), this.invDisplay.width = this.rows, 
+            this.invDisplay.height = this.columns, this.invDisplay.style = "display: grid;", 
+            this.invDisplay.style.position = "absolute", this.invDisplay.style.top = "0px", 
+            this.invDisplay.style.left = "0px";
+            for (let t of this.items) this.invDisplay.appendChild(t.img);
+            document.body.appendChild(this.invDisplay), this.open = !0;
+        }
+        hide() {
+            document.body.removeChild(this.invDisplay), this.open = !1;
+        }
+    }
+    class n {
+        constructor(t) {
+            this.x = 0, this.y = 0, this.velX = 0, this.velY = 0, this.img = t.player, this.rotation = 90, 
+            this.speed = 5, this.inventory = new a(t), this.equipment = {
+                head: null,
+                shoulders: null,
+                arms: null,
+                gloves: null,
+                backWeapon: null,
+                leftWeapon: null,
+                rightWeapon: null,
+                leggings: null,
+                boots: null
+            };
+        }
+        addItem(t, e, s) {
+            this.inventory.addItem(t, e, s);
+        }
+        removeItem(t, e) {
+            this.inventory.removeItem(t, e);
+        }
+        equipItem(t, e) {
+            this.inventory.removeItem(t), this.equipment[e].push(t);
+        }
+        unequipItem(t, e) {
+            this.equipment[e] = null, this.inventory.push(new i(t, 1));
+        }
+    }
+    class o {
         constructor() {
-            this.ctx = document.getElementById("canva").getContext("2d");
+            this.canvas = document.getElementById("canva"), this.ctx = this.canvas.getContext("2d");
         }
         clear() {
             this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -134,7 +200,7 @@
             t.x += t.velX, t.y += t.velY;
         }
     }
-    class T {
+    class h {
         constructor(t, e) {
             e = e || {}, this.distance = 1e3, this.lookat = [ 0, 0 ], this.context = t, this.fieldOfView = e.fieldOfView || Math.PI / 4, 
             this.viewport = {
@@ -181,22 +247,41 @@
             s;
         }
     }
-    class h {
+    class r {
         constructor(t) {
             this.ctx = t, this.x = 0, this.y = 0, this.velX = 0, this.velY = 0, this.img = new Image, 
-            this.img.src = "./assets/cursor.png";
+            this.img.src = "./assets/cursor.png", this.speed = 1.5;
+        }
+        updatePosition(t, e) {
+            this.x += t.movementX, this.y += t.movementY;
         }
         draw() {
-            ctx.drawImage(this.img, this.x, this.y);
+            this.ctx.drawImage(this.img, this.x, this.y);
         }
         update() {
             this.x += 1.5 * this.velX, this.y += 1.5 * this.velY;
         }
     }
-    class o {
+    class l extends Image {
+        constructor(t) {
+            super(), this.src = t;
+        }
+    }
+    class c {
         constructor() {
-            this.keybinds = new s, this.player = new i, this.batch = new a, this.camera = new T(this.batch.ctx), 
-            this.cursor = new h(this.batch.ctx), document.addEventListener("keydown", t => {
+            this.assets = {
+                unknown: new l("../../assets/unknown.png"),
+                player: new l("../../assets/player.png")
+            }, this.keybinds = new s, this.player = new n(this.assets), this.batch = new o, 
+            this.camera = new h(this.batch.ctx), this.cursor = new r(this.batch.ctx), this.batch.canvas.requestPointerLock = this.batch.canvas.requestPointerLock || this.batch.canvas.mozRequestPointerLock, 
+            document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock, 
+            this.batch.canvas.onclick = () => {
+                this.batch.canvas.requestPointerLock();
+            }, document.addEventListener("pointerlockchange", () => {
+                this.lockChangeAlert(this.batch);
+            }, !1), document.addEventListener("mozpointerlockchange", () => {
+                this.lockChangeAlert(this.batch);
+            }, !1), document.addEventListener("keydown", t => {
                 switch (t.key) {
                   case "w":
                     this.player.velY = -5;
@@ -212,6 +297,10 @@
 
                   case "d":
                     this.player.velX = 5;
+                    break;
+
+                  case "e":
+                    this.player.inventory.open ? this.player.inventory.hide() : this.player.inventory.display();
                 }
             }), document.addEventListener("keyup", t => {
                 switch (t.key) {
@@ -230,50 +319,55 @@
                   case "d":
                     this.player.velX = 0;
                 }
-            }), document.addEventListener("mousemove", t => {
-                this.cursor.x = t.offsetX, this.cursor.y = t.offsetY;
-            });
+            }), this.player.addItem("unknown", null, 1);
+        }
+        lockChangeAlert(t) {
+            document.pointerLockElement === t.canvas || document.mozPointerLockElement === t.canvas ? document.addEventListener("mousemove", e => {
+                this.cursor.updatePosition(e, t.canvas);
+            }, !1) : document.removeEventListener("mousemove", e => {
+                this.cursor.updatePosition(e, t.canvas);
+            }, !1);
         }
         render() {
-            this.camera.begin(), this.batch.clear(), this.camera.moveTo(this.player.x, this.player.y), 
+            this.batch.clear(), this.camera.begin(), this.camera.moveTo(this.player.x, this.player.y), 
             this.batch.draw(this.player), this.batch.draw(this.cursor), this.camera.end();
         }
         update() {
             this.player.rotation = this.keybinds.watchTarget(this.player, this.cursor), this.batch.update(this.player);
         }
     }
-    class r {}
+    class T {}
     class _ {}
     // Imports
     // Webpages to be loaded into the router
-        let n = [ "<h2>Choose your console</h2>", "<button id='pc'>Computer (PC) </button>", "<button id='console'>Console (XBOX | SWITCH | PS' </buttom>", "<button id='mobile'> Mobile (Phones, Tablets) </button>" ].join("\n"), c = new e(n);
-    c.run = () => {
+        let E = new e("\n    <h2>Choose your console</h2>\n    <button id='pc'>Computer (PC)</button>\n    <button id='console'>Console (XBOX | SWITCH | PS' </buttom>\n    <button id='mobile'> Mobile (Phones, Tablets) </button>\n");
+    E.run = () => {
         document.querySelectorAll("button").forEach(t => {
             t.onclick = () => {
                 localStorage.setItem("console", t.id), window.location = "./#/game";
             };
         });
     };
-    let l = [ "<link rel='stylesheet' href='./styles/global.css'>", "<canvas id='canva'></canvas>" ].join("\n"), E = new e(l), w = null;
-    function P() {
-        w.render(), w.update(), requestAnimationFrame(P);
+    let d = new e("\n    <link rel='stylesheet' href='./styles/global.css'>\n    <canvas id='canva'></canvas>\n"), p = null;
+    function u() {
+        p.render(), p.update(), requestAnimationFrame(u);
     }
-    E.run = () => {
+    d.run = () => {
         let t = document.getElementById("canva");
         switch (t.width = window.innerWidth, t.height = window.innerHeight, localStorage.getItem("console")) {
           case "pc":
-            let t = new o;
-            w = t, requestAnimationFrame(P);
+            let t = new c;
+            p = t, requestAnimationFrame(u);
             break;
 
           case "console":
-            let e = new r;
-            w = e, requestAnimationFrame(P);
+            let e = new T;
+            p = e, requestAnimationFrame(u);
             break;
 
           case "mobile":
             let s = new _;
-            w = s, requestAnimationFrame(P);
+            p = s, requestAnimationFrame(u);
         }
     }, 
     // Starts the router
@@ -306,7 +400,7 @@
             await s.render(), await s.run();
         }
     }({
-        "/": c,
-        "/game": E
+        "/": E,
+        "/game": d
     }).start();
 }();

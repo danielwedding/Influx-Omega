@@ -1,6 +1,7 @@
 export class Batch {
     constructor() {
-        this.ctx = document.getElementById("canva").getContext("2d");
+        this.canvas = document.getElementById("canva");
+        this.ctx = this.canvas.getContext("2d");
     }
 
     clear() {

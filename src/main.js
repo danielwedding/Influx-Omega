@@ -1,16 +1,16 @@
 // Imports
 import { Router, View } from "@outwalk/iris";
-import { PC } from "./pc";
-import { Console } from "./console";
-import { Mobile } from "./mobile";
+import { PC } from "./Devices/pc";
+import { Console } from "./Devices/console";
+import { Mobile } from "./Devices/mobile";
 
 // Webpages to be loaded into the router
-let menuHTML = [
-    "<h2>Choose your console</h2>",
-    "<button id='pc'>Computer (PC) </button>",
-    "<button id='console'>Console (XBOX | SWITCH | PS' </buttom>",
-    "<button id='mobile'> Mobile (Phones, Tablets) </button>"
-].join("\n");
+let menuHTML = `
+    <h2>Choose your console</h2>
+    <button id='pc'>Computer (PC)</button>
+    <button id='console'>Console (XBOX | SWITCH | PS' </buttom>
+    <button id='mobile'> Mobile (Phones, Tablets) </button>
+`;
 
 let menu = new View(menuHTML);
 
@@ -23,10 +23,10 @@ menu.run = () => {
     });
 };
 
-let gameHTML = [
-    "<link rel='stylesheet' href='./styles/global.css'>",
-    "<canvas id='canva'></canvas>"
-].join("\n");
+let gameHTML = `
+    <link rel='stylesheet' href='./styles/global.css'>
+    <canvas id='canva'></canvas>
+`;
 
 let game = new View(gameHTML);
 

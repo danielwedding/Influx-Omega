@@ -7,10 +7,16 @@ export class Cursor {
         this.velY = 0;
         this.img = new Image();
         this.img.src = "./assets/cursor.png";
+        this.speed = 1.5;
+    }
+
+    updatePosition(e, canvas) {
+        this.x += e.movementX;
+        this.y += e.movementY;
     }
 
     draw() {
-        ctx.drawImage(this.img, this.x, this.y);
+        this.ctx.drawImage(this.img, this.x, this.y);
     }
 
     update() {

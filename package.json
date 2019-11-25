@@ -4,7 +4,7 @@
     "description": "A code lab to test and improve skills on what I need to do to become a programmer",
     "main": "",
     "scripts": {
-        "splice": "sable"
+        "splice": "sable && sable serve --port 2040"
     },
     "author": "Daniel Wedding",
     "license": "MIT",
